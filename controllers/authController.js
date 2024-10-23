@@ -10,18 +10,19 @@ exports.registerUser = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { username, email, password } = req.body;
+  const { username, password } = req.body;
 
   try {
-    let user = await User.findOne({ email });
+    // Check if the username already exists
+    let user = await User.findOne({ username });
 
     if (user) {
-      return res.status(400).json({ msg: "User already exists" });
+      return res.status(400).json({ msg: "Username already exists" });
     }
 
+    // Create new user
     user = new User({
       username,
-      email,
       password,
     });
 
@@ -60,10 +61,11 @@ exports.loginUser = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { email, password } = req.body;
+  const { username, password } = req.body;
 
   try {
-    let user = await User.findOne({ email });
+    // Check if the user exists by username
+    let user = await User.findOne({ username });
 
     if (!user) {
       return res.status(400).json({ msg: "Invalid credentials" });

@@ -7,9 +7,17 @@ const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const corsOptions = {
+  origin: "https://to-do-it-node.vercel.app", // Frontend URL (Vercel URL for your UI)
+  credentials: true, // Allow credentials like cookies or tokens to be sent in the requests
+  allowedHeaders: ["Content-Type", "Authorization"], // Allow headers needed for your requests
+  methods: "GET,POST,PUT,DELETE,OPTIONS", // Specify allowed methods
+};
+
 // Middleware to parse JSON bodies
 app.use(express.json());
-app.use(cors());
+
+app.use(cors(corsOptions));
 
 app.use(express.static(path.join(__dirname, "../ui")));
 

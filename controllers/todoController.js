@@ -54,8 +54,40 @@ const deleteTodo = async (req, res) => {
   }
 };
 
+const updateTodo = async (req, res) => {
+  const { title } = req.body; // Get the new title from the request body
+
+  // Ensure the user is authenticated
+  if (!req.user) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  try {
+    const todo = await Todo.findById(req.params.id); // Fetch the todo by ID
+
+    if (!todo) {
+      return res.status(404).json({ error: "Todo not found" }); // Handle case where todo does not exist
+    }
+
+    // Ensure the todo belongs to the user
+    if (todo.user.toString() !== req.user.id) {
+      return res.status(403).json({ error: "Unauthorized" }); // Handle unauthorized access
+    }
+
+    // Update the todo's title
+    todo.title = title; // Update title with new value
+    const updatedTodo = await todo.save(); // Save the updated todo
+
+    res.json(updatedTodo); // Send the updated todo back in the response
+  } catch (err) {
+    console.error("Error details:", err);
+    res.status(500).json({ error: "Server error" }); // Handle server error
+  }
+};
+
 module.exports = {
   getTodos,
   createTodo,
   deleteTodo,
+  updateTodo,
 };
